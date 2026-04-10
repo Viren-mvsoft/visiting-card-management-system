@@ -1,0 +1,15 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Redirect all requests to the public directory for shared hosting
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L,QSA]
+
+    # Prevent showing default Apache 403 Forbidden pages
+    # This acts as a fallback to redirect 403 errors (like from the storage block) directly to the main app
+    ErrorDocument 403 /public/index.php
+</IfModule>
