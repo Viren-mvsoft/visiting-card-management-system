@@ -4,7 +4,17 @@
 
 @section('content')
 <div class="max-w-3xl mx-auto animate-fade-in">
-    <form method="POST" action="{{ route('email-templates.update', $emailTemplate) }}">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <style>
+        .ql-toolbar.ql-snow { border-color: #334155 !important; background: #1e293b; border-radius: 0.75rem 0.75rem 0 0; border: 1px solid #334155; }
+        .ql-container.ql-snow { border-color: #334155 !important; border-radius: 0 0 0.75rem 0.75rem; border: 1px solid #334155; font-family: 'Inter', sans-serif; font-size: 0.875rem; color: #e2e8f0; }
+        .ql-snow .ql-stroke { stroke: #cbd5e1; }
+        .ql-snow .ql-fill, .ql-snow .ql-stroke.ql-fill { fill: #cbd5e1; }
+        .ql-snow .ql-picker { color: #cbd5e1; }
+        .ql-snow .ql-picker-options { background-color: #1e293b; border-color: #334155; }
+        .ql-editor { min-height: 250px; }
+    </style>
+    <form method="POST" action="{{ route('email-templates.update', $emailTemplate) }}" id="template-form">
         @csrf @method('PUT')
         <div class="glass rounded-2xl p-6 mb-6">
             <h3 class="text-lg font-semibold text-white mb-5">Template Details</h3>
@@ -39,8 +49,10 @@
                                 class="px-2.5 py-1 rounded-lg text-xs font-medium bg-surface-800 text-primary-400 hover:bg-primary-500/10 border border-surface-700 hover:border-primary-500/30 transition-all">{{ str_replace('@', '', $var) }}</button>
                         @endforeach
                     </div>
-                    <textarea id="template-body" name="body" rows="12" required
-                        class="w-full rounded-xl border border-surface-700 bg-surface-800 px-4 py-3 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all resize-y font-mono">{{ old('body', $emailTemplate->body) }}</textarea>
+                    <input type="hidden" name="body" id="body-hidden" value="{{ old('body', $emailTemplate->body) }}">
+                    <div id="editor-container" class="bg-surface-800 text-surface-200">
+                        {!! old('body', $emailTemplate->body) !!}
+                    </div>
                     @error('body') <p class="mt-1 text-sm text-danger-400">{{ $message }}</p> @enderror
                 </div>
             </div>
@@ -53,15 +65,34 @@
         </div>
     </form>
 </div>
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 <script>
+var quill = new Quill('#editor-container', {
+    theme: 'snow',
+    modules: {
+        toolbar: [
+            ['bold', 'italic', 'underline', 'strike'],
+            ['blockquote', 'code-block'],
+            [{ 'header': 1 }, { 'header': 2 }],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'size': ['small', false, 'large', 'huge'] }],
+            [{ 'color': [] }, { 'background': [] }],
+            ['link', 'image'],
+            ['clean']
+        ]
+    }
+});
+
+document.getElementById('template-form').addEventListener('submit', function() {
+    var html = quill.root.innerHTML;
+    // Don't send empty paragraph if that's all it is
+    if (html === '<p><br></p>') html = '';
+    document.getElementById('body-hidden').value = html;
+});
+
 function insertVariable(variable) {
-    var textarea = document.getElementById('template-body');
-    var start = textarea.selectionStart;
-    var end = textarea.selectionEnd;
-    var text = textarea.value;
-    textarea.value = text.substring(0, start) + variable + text.substring(end);
-    textarea.selectionStart = textarea.selectionEnd = start + variable.length;
-    textarea.focus();
+    var range = quill.getSelection(true);
+    quill.insertText(range.index, variable);
 }
 </script>
 @endsection

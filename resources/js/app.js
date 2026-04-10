@@ -191,7 +191,13 @@ window.loadTemplatePreview = function(templateId, contactId, configId) {
         const subjectEl = document.getElementById('preview-subject');
         const bodyEl = document.getElementById('preview-body');
         if (subjectEl) subjectEl.textContent = data.subject;
-        if (bodyEl) bodyEl.innerHTML = data.body;
+        if (bodyEl) {
+            if (bodyEl.tagName === 'IFRAME') {
+                bodyEl.srcdoc = data.body;
+            } else {
+                bodyEl.innerHTML = data.body;
+            }
+        }
     })
     .catch(function(err) { console.error('Preview error:', err); });
 };

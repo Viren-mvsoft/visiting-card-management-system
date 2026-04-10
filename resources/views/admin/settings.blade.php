@@ -26,13 +26,12 @@
                         <div>
                             <label class="block text-sm font-medium text-surface-300 mb-2">Company Logo</label>
                             
-                            @if(!empty($settings['company_logo']))
-                                <div class="mb-4 p-3 bg-surface-800 rounded-xl border border-surface-700 inline-block">
-                                    <img src="{{ Storage::url($settings['company_logo']) }}" alt="Current Logo" class="h-12 object-contain" />
-                                </div>
-                            @endif
+                            <div id="logo-preview-container" class="mb-5 p-5 rounded-xl border border-surface-700 {{ !empty($settings['company_logo']) ? 'inline-block' : 'hidden' }} min-w-[200px]" style="background-image: linear-gradient(45deg, #1e293b 25%, transparent 25%), linear-gradient(-45deg, #1e293b 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #1e293b 75%), linear-gradient(-45deg, transparent 75%, #1e293b 75%); background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px; background-color: #0f172a;">
+                                <img id="logo-preview-image" src="{{ !empty($settings['company_logo']) ? Storage::url($settings['company_logo']) : '#' }}" alt="Current Logo" class="max-h-24 w-auto object-contain mx-auto mix-blend-normal" />
+                            </div>
                             
-                            <input type="file" name="company_logo" accept="image/*"
+                            <input type="file" name="company_logo" id="company_logo_input" accept="image/*"
+                                onchange="handleLogoPreview(this)"
                                 class="block w-full text-sm text-surface-400
                                   file:mr-4 file:py-2.5 file:px-4
                                   file:rounded-xl file:border-0
@@ -40,7 +39,9 @@
                                   file:bg-surface-800 file:text-primary-400
                                   hover:file:bg-surface-700 file:transition-colors file:cursor-pointer
                                   rounded-xl border border-surface-700 bg-surface-800 focus:outline-none" />
-                            <p class="mt-2 text-xs text-surface-500">PNG, JPG or GIF up to 2MB. Recommended height: 50px.</p>
+                            <p class="mt-2 text-xs text-surface-500">PNG, JPG or GIF up to 2MB. Recommended height: 50px. Selected logo should be in horizontal format.</p>
+                            <p id="logo-size-error" class="mt-2 text-xs text-danger-400 hidden">File size exceeds 2MB limit!</p>
+                            @error('company_logo') <p class="mt-2 text-xs text-danger-400">{{ $message }}</p> @enderror
                         </div>
                     </div>
                 </div>
@@ -146,4 +147,32 @@
         </div>
     </form>
 </div>
+<script>
+function handleLogoPreview(input) {
+    const container = document.getElementById('logo-preview-container');
+    const image = document.getElementById('logo-preview-image');
+    const errorMsg = document.getElementById('logo-size-error');
+    
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        
+        // Validate size (2MB = 2 * 1024 * 1024 bytes)
+        if (file.size > 2 * 1024 * 1024) {
+            errorMsg.classList.remove('hidden');
+            input.value = ''; // Reset input
+            return;
+        } else {
+            errorMsg.classList.add('hidden');
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            image.src = e.target.result;
+            container.classList.remove('hidden');
+            container.classList.add('inline-block');
+        }
+        reader.readAsDataURL(file);
+    }
+}
+</script>
 @endsection

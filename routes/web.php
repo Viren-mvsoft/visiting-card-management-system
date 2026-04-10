@@ -7,6 +7,7 @@ use App\Http\Controllers\EmailLogController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SendEmailController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -60,8 +61,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('users', UserManagementController::class)->only(['index', 'create', 'store', 'destroy']);
 
         // Settings
-        Route::get('/settings', [\App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
-        Route::post('/settings', [\App\Http\Controllers\SettingController::class, 'store'])->name('settings.store');
+        Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+        Route::post('/settings', [SettingController::class, 'store'])->name('settings.store');
     });
 });
 
@@ -308,3 +309,10 @@ Route::get('/migrate', function () {
 
     return $output;
 });
+
+// Route::get('/migrate-fresh', function () {
+//     Artisan::call('migrate:fresh --seed');
+//     $output = Artisan::output();
+
+//     return $output;
+// });
