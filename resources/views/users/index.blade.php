@@ -12,7 +12,8 @@
 @section('content')
 <div class="space-y-6 animate-fade-in">
     <div class="glass rounded-2xl overflow-hidden">
-        <table class="w-full">
+        <div class="overflow-x-auto">
+            <table class="w-full min-w-[600px] md:min-w-full">
             <thead>
                 <tr class="border-b border-surface-700/50">
                     <th class="text-left px-6 py-4 text-xs font-semibold uppercase tracking-wider text-surface-400">Name</th>
@@ -54,7 +55,8 @@
                 @endforeach
             </tbody>
         </table>
-        <div class="px-6 py-4 border-t border-surface-800/50">{{ $users->links() }}</div>
+    </div>
+    <div class="px-6 py-4 border-t border-surface-800/50">{{ $users->links() }}</div>
     </div>
 </div>
 @endsection

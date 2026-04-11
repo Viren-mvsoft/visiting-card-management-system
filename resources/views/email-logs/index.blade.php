@@ -6,7 +6,8 @@
 <div class="space-y-6 animate-fade-in">
     <div class="glass rounded-2xl overflow-hidden">
         @if($logs->count() > 0)
-            <table class="w-full">
+            <div class="overflow-x-auto">
+                <table class="w-full min-w-[700px] md:min-w-full">
                 <thead>
                     <tr class="border-b border-surface-700/50">
                         <th class="text-left px-6 py-4 text-xs font-semibold uppercase tracking-wider text-surface-400">Status</th>
@@ -51,7 +52,8 @@
                     @endforeach
                 </tbody>
             </table>
-            <div class="px-6 py-4 border-t border-surface-800/50">{{ $logs->links() }}</div>
+        </div>
+        <div class="px-6 py-4 border-t border-surface-800/50">{{ $logs->links() }}</div>
         @else
             <div class="text-center py-16">
                 <svg class="w-16 h-16 mx-auto text-surface-700 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>

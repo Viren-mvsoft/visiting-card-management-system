@@ -47,6 +47,76 @@
     --color-success-500: #22c55e;
 }
 
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light mode overrides */
+.light {
+    --color-surface-50: #020617;
+    --color-surface-100: #0f172a;
+    --color-surface-200: #1e293b;
+    --color-surface-300: #334155;
+    --color-surface-400: #475569;
+    --color-surface-500: #64748b;
+    --color-surface-600: #94a3b8;
+    --color-surface-700: #cbd5e1;
+    --color-surface-800: #e2e8f0;
+    --color-surface-900: #f1f5f9;
+    --color-surface-950: #f8fafc;
+}
+
+.light .text-white:not(button):not(.px-6):not(.bg-gradient-to-r) { color: var(--color-surface-50) !important; }
+.light .hover\:text-white:hover { color: var(--color-surface-50) !important; }
+.light .group:hover .group-hover\:text-white { color: var(--color-surface-50) !important; }
+
+/* Ensure primary/gradient buttons keep white text */
+.light button.text-white, 
+.light a.text-white,
+.light .bg-gradient-to-r.text-white { 
+    color: #ffffff !important; 
+}
+
+.light .glass {
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 24px 48px -12px rgba(0, 0, 0, 0.05);
+}
+.light .border-surface-700 { border-color: var(--color-surface-700) !important; }
+.light .border-surface-700\/50 { border-color: rgba(203, 213, 225, 0.5) !important; }
+.light .bg-surface-800\/50:hover { background-color: rgba(226, 232, 240, 0.5) !important; }
+
+/* Quill Light Mode */
+.light .ql-toolbar.ql-snow {
+    background: var(--color-surface-900) !important;
+    border-color: var(--color-surface-700) !important;
+}
+.light .ql-container.ql-snow {
+    background: var(--color-surface-950) !important;
+    border-color: var(--color-surface-700) !important;
+    color: var(--color-surface-50) !important;
+}
+.light .ql-snow .ql-stroke {
+    stroke: var(--color-surface-400) !important;
+}
+.light .ql-snow .ql-fill, .light .ql-snow .ql-stroke.ql-fill {
+    fill: var(--color-surface-400) !important;
+}
+.light .ql-snow .ql-picker {
+    color: var(--color-surface-400) !important;
+}
+.light .ql-snow .ql-picker-options {
+    background-color: var(--color-surface-900) !important;
+    border-color: var(--color-surface-700) !important;
+}
+
+.light ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+}
+.light ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
     width: 6px;
@@ -121,3 +191,24 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
+
+/* Theme Icons */
+.sun-icon { display: none; }
+.moon-icon { display: block; }
+
+.light .sun-icon { display: block; }
+.light .moon-icon { display: none; }
+
+/* Checkerboard Pattern for Image Previews */
+.checkerboard {
+    background-image: linear-gradient(45deg, var(--color-surface-800) 25%, transparent 25%), 
+                      linear-gradient(-45deg, var(--color-surface-800) 25%, transparent 25%), 
+                      linear-gradient(45deg, transparent 75%, var(--color-surface-800) 75%), 
+                      linear-gradient(-45deg, transparent 75%, var(--color-surface-800) 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    background-color: var(--color-surface-900);
+}
+
+
+

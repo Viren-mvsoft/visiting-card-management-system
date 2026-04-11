@@ -23,9 +23,13 @@ class SettingController extends Controller
             'twitter_link' => 'nullable|url|max:255',
             'linkedin_link' => 'nullable|url|max:255',
             'instagram_link' => 'nullable|url|max:255',
+            'email_theme_enabled' => 'nullable|in:on,off,1,0',
             'email_theme' => 'required|in:default,dark,bold',
             'company_logo' => 'nullable|image|max:2048', // 2MB Max
         ]);
+
+        // Specific handling for 'email_theme_enabled' checkbox
+        $validated['email_theme_enabled'] = $request->has('email_theme_enabled') ? '1' : '0';
 
         // Handle image upload separately
         if ($request->hasFile('company_logo')) {

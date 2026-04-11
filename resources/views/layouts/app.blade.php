@@ -25,6 +25,14 @@
     <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700&display=swap" rel="stylesheet" />
 
     <!-- Scripts -->
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            if (theme === 'light') {
+                document.documentElement.classList.add('light');
+            }
+        })();
+    </script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -130,9 +138,22 @@
                         Email Logs
                     </a>
 
+                    <div class="px-3 mt-6 mb-3 flex items-center justify-between">
+                        <p class="text-xs font-semibold uppercase tracking-wider text-surface-500">Theme</p>
+                        <button onclick="toggleTheme()" class="p-1.5 rounded-lg bg-surface-800 border border-surface-700 text-surface-400 hover:text-primary-400 transition-all focus:outline-none" title="Toggle Light/Dark Mode">
+                            <!-- Sun Icon (visible in light mode) -->
+                            <svg class="w-4 h-4 sun-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+                            </svg>
+                            <!-- Moon Icon (visible in dark mode) -->
+                            <svg class="w-4 h-4 moon-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                            </svg>
+                        </button>
+                    </div>
+
                     @if (auth()->user()->isAdmin())
-                        <p class="px-3 mt-6 mb-3 text-xs font-semibold uppercase tracking-wider text-surface-500">Admin
-                        </p>
+                        <p class="px-3 mt-4 mb-3 text-xs font-semibold uppercase tracking-wider text-surface-500">Admin</p>
 
                         <a href="{{ route('email-configs.index') }}"
                             class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('email-configs.*') ? 'bg-primary-500/15 text-primary-400 shadow-sm' : 'text-surface-400 hover:text-surface-200 hover:bg-surface-800/50' }}">

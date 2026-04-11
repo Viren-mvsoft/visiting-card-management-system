@@ -7,6 +7,7 @@ use App\Models\Contact;
 use App\Models\EmailConfiguration;
 use App\Models\EmailLog;
 use App\Models\EmailTemplate;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 
 class SendEmailController extends Controller
@@ -75,7 +76,7 @@ class SendEmailController extends Controller
         }
 
         $ccEmails = [];
-        if (!empty($validated['cc_emails'])) {
+        if (! empty($validated['cc_emails'])) {
             $ccList = array_map('trim', explode(',', $validated['cc_emails']));
             foreach ($ccList as $cc) {
                 if (filter_var($cc, FILTER_VALIDATE_EMAIL)) {
@@ -123,20 +124,25 @@ class SendEmailController extends Controller
         }
 
         // Fetch global settings
-        $settings = \App\Models\Setting::pluck('value', 'key')->toArray();
-        $themeName = $settings['email_theme'] ?? 'default';
-        $themeView = 'emails.themes.' . $themeName;
-        
-        if (!view()->exists($themeView)) {
-            $themeView = 'emails.themes.default';
-        }
-
+        $settings = Setting::pluck('value', 'key')->toArray();
+        $isThemeEnabled = ($settings['email_theme_enabled'] ?? '0') === '1';
         $renderedBodyContent = $template->renderBody($contact, $senderName);
-        
-        $compiledHtml = view($themeView, [
-            'body' => $renderedBodyContent,
-            'settings' => $settings
-        ])->render();
+
+        if ($isThemeEnabled) {
+            $themeName = $settings['email_theme'] ?? 'default';
+            $themeView = 'emails.themes.'.$themeName;
+
+            if (! view()->exists($themeView)) {
+                $themeView = 'emails.themes.default';
+            }
+
+            $compiledHtml = view($themeView, [
+                'body' => $renderedBodyContent,
+                'settings' => $settings,
+            ])->render();
+        } else {
+            $compiledHtml = $renderedBodyContent;
+        }
 
         return response()->json([
             'subject' => $template->renderSubject($contact, $senderName),

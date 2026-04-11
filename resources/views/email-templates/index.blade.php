@@ -13,7 +13,8 @@
 <div class="space-y-6 animate-fade-in">
     @if($templates->count() > 0)
         <div class="glass rounded-2xl overflow-hidden">
-            <table class="w-full">
+            <div class="overflow-x-auto">
+                <table class="w-full min-w-[700px] md:min-w-full">
                 <thead>
                     <tr class="border-b border-surface-700/50">
                         <th class="text-left px-6 py-4 text-xs font-semibold uppercase tracking-wider text-surface-400">Name</th>
@@ -56,7 +57,8 @@
                 </tbody>
             </table>
         </div>
-        <div>{{ $templates->links() }}</div>
+        <div class="px-6 py-4 border-t border-surface-800/50">{{ $templates->links() }}</div>
+    </div>
     @else
         <div class="glass rounded-2xl text-center py-16">
             <svg class="w-16 h-16 mx-auto text-surface-700 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6z"/></svg>

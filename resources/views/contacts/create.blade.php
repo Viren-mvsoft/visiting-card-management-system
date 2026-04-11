@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="max-w-4xl mx-auto animate-fade-in">
-    <form method="POST" action="{{ route('contacts.store') }}" enctype="multipart/form-data">
+    <form method="POST" action="{{ route('contacts.store') }}" enctype="multipart/form-data" autocomplete="off">
         @csrf
 
         <!-- Basic Information -->
@@ -60,14 +60,14 @@
                 </button>
             </div>
             <div id="phone-fields" class="space-y-3">
-                <div class="flex items-center gap-3">
-                    <select name="phones[0][label]" class="w-32 rounded-xl border border-surface-700 bg-surface-800 px-3 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all">
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <select name="phones[0][label]" class="w-24 sm:w-32 shrink-0 rounded-xl border border-surface-700 bg-surface-800 px-3 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all">
                         <option value="mobile">Mobile</option>
                         <option value="office">Office</option>
                         <option value="other">Other</option>
                     </select>
                     <input type="tel" name="phones[0][phone]" placeholder="Phone number"
-                        class="flex-1 rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 placeholder-surface-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all" />
+                        class="flex-1 min-w-0 rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 placeholder-surface-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all" />
                 </div>
             </div>
         </div>
@@ -83,14 +83,14 @@
                 </button>
             </div>
             <div id="email-fields" class="space-y-3">
-                <div class="flex items-center gap-3">
-                    <select name="emails[0][label]" class="w-32 rounded-xl border border-surface-700 bg-surface-800 px-3 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all">
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <select name="emails[0][label]" class="w-24 sm:w-32 shrink-0 rounded-xl border border-surface-700 bg-surface-800 px-3 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all">
                         <option value="work">Work</option>
                         <option value="personal">Personal</option>
                         <option value="other">Other</option>
                     </select>
                     <input type="email" name="emails[0][email]" placeholder="Email address"
-                        class="flex-1 rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 placeholder-surface-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all" />
+                        class="flex-1 min-w-0 rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 placeholder-surface-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all" />
                 </div>
             </div>
         </div>

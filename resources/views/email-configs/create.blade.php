@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="max-w-2xl mx-auto animate-fade-in">
-    <form method="POST" action="{{ route('email-configs.store') }}">
+    <form method="POST" action="{{ route('email-configs.store') }}" autocomplete="off">
         @csrf
         <div class="glass rounded-2xl p-6 mb-6">
             <h3 class="text-lg font-semibold text-white mb-5">SMTP Settings</h3>

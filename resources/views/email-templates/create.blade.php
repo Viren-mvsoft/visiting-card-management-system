@@ -6,15 +6,15 @@
 <div class="max-w-3xl mx-auto animate-fade-in">
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <style>
-        .ql-toolbar.ql-snow { border-color: #334155 !important; background: #1e293b; border-radius: 0.75rem 0.75rem 0 0; border: 1px solid #334155; }
-        .ql-container.ql-snow { border-color: #334155 !important; border-radius: 0 0 0.75rem 0.75rem; border: 1px solid #334155; font-family: 'Inter', sans-serif; font-size: 0.875rem; color: #e2e8f0; }
-        .ql-snow .ql-stroke { stroke: #cbd5e1; }
-        .ql-snow .ql-fill, .ql-snow .ql-stroke.ql-fill { fill: #cbd5e1; }
-        .ql-snow .ql-picker { color: #cbd5e1; }
-        .ql-snow .ql-picker-options { background-color: #1e293b; border-color: #334155; }
+        .ql-toolbar.ql-snow { border-color: var(--color-surface-700) !important; background: var(--color-surface-800); border-radius: 0.75rem 0.75rem 0 0; border: 1px solid var(--color-surface-700); }
+        .ql-container.ql-snow { border-color: var(--color-surface-700) !important; border-radius: 0 0 0.75rem 0.75rem; border: 1px solid var(--color-surface-700); font-family: 'Inter', sans-serif; font-size: 0.875rem; color: var(--color-surface-200); }
+        .ql-snow .ql-stroke { stroke: var(--color-surface-400); }
+        .ql-snow .ql-fill, .ql-snow .ql-stroke.ql-fill { fill: var(--color-surface-400); }
+        .ql-snow .ql-picker { color: var(--color-surface-300); }
+        .ql-snow .ql-picker-options { background-color: var(--color-surface-800); border-color: var(--color-surface-700); }
         .ql-editor { min-height: 250px; }
     </style>
-    <form method="POST" action="{{ route('email-templates.store') }}" id="template-form">
+    <form method="POST" action="{{ route('email-templates.store') }}" id="template-form" autocomplete="off">
         @csrf
         <div class="glass rounded-2xl p-6 mb-6">
             <h3 class="text-lg font-semibold text-white mb-5">Template Details</h3>

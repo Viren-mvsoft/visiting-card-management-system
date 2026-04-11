@@ -10,7 +10,7 @@
             <h3 class="text-lg font-semibold text-white mb-1">Profile Information</h3>
             <p class="text-sm text-surface-400 mb-5">Update your account's name and email address.</p>
 
-            <form method="POST" action="{{ route('profile.update') }}">
+            <form method="POST" action="{{ route('profile.update') }}" autocomplete="off">
                 @csrf @method('patch')
 
                 <div class="space-y-5">
@@ -53,7 +53,7 @@
             <p class="text-sm text-surface-400 mb-5">Ensure your account is using a long, random password to stay secure.
             </p>
 
-            <form method="POST" action="{{ route('password.update') }}">
+            <form method="POST" action="{{ route('password.update') }}" autocomplete="off">
                 @csrf @method('put')
 
                 <div class="space-y-5">

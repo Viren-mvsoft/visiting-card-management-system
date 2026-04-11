@@ -102,16 +102,16 @@ window.addRepeatableField = function(containerId, type) {
     const inputType = type === 'phone' ? 'tel' : 'email';
 
     const html = `
-        <div class="flex items-center gap-3 animate-fade-in" id="${fieldName}-row-${index}">
+        <div class="flex items-center gap-2 sm:gap-3 animate-fade-in" id="${fieldName}-row-${index}">
             <select name="${fieldName}[${index}][label]"
-                class="w-32 rounded-xl border border-surface-700 bg-surface-800 px-3 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all">
+                class="w-24 sm:w-32 shrink-0 rounded-xl border border-surface-700 bg-surface-800 px-3 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all">
                 ${labels}
             </select>
             <input type="${inputType}" name="${fieldName}[${index}][${type === 'phone' ? 'phone' : 'email'}]"
                 placeholder="${placeholder}"
-                class="flex-1 rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 placeholder-surface-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all" />
+                class="flex-1 min-w-0 rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 placeholder-surface-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all" />
             <button type="button" onclick="this.parentElement.remove()"
-                class="p-2 rounded-lg text-danger-400 hover:bg-danger-500/10 transition-colors">
+                class="shrink-0 p-2 rounded-lg text-danger-400 hover:bg-danger-500/10 transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                 </svg>
@@ -166,6 +166,24 @@ window.confirmDelete = function(formId, itemName) {
         document.getElementById(formId).submit();
     }
 };
+
+// Theme management
+window.initTheme = function() {
+    const theme = localStorage.getItem('theme') || 'dark';
+    if (theme === 'light') {
+        document.documentElement.classList.add('light');
+    } else {
+        document.documentElement.classList.remove('light');
+    }
+};
+
+window.toggleTheme = function() {
+    const isLight = document.documentElement.classList.toggle('light');
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+};
+
+// Initialize theme on load
+document.addEventListener('DOMContentLoaded', initTheme);
 
 // Template preview (for send email page)
 window.loadTemplatePreview = function(templateId, contactId, configId) {

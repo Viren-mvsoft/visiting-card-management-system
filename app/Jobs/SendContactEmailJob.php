@@ -60,20 +60,28 @@ class SendContactEmailJob implements ShouldQueue
             // Fetch global settings
             $settings = \App\Models\Setting::pluck('value', 'key')->toArray();
             
-            // Determine theme view
-            $themeName = $settings['email_theme'] ?? 'default';
-            $themeView = 'emails.themes.' . $themeName;
+            // Determine if theme is enabled
+            $isThemeEnabled = ($settings['email_theme_enabled'] ?? '0') === '1';
             
-            // Fallback to default if somehow not exists
-            if (!view()->exists($themeView)) {
-                $themeView = 'emails.themes.default';
-            }
+            if ($isThemeEnabled) {
+                // Determine theme view
+                $themeName = $settings['email_theme'] ?? 'default';
+                $themeView = 'emails.themes.' . $themeName;
+                
+                // Fallback to default if somehow not exists
+                if (!view()->exists($themeView)) {
+                    $themeView = 'emails.themes.default';
+                }
 
-            // Render HTML body using the theme
-            $compiledHtml = view($themeView, [
-                'body' => $log->body,
-                'settings' => $settings
-            ])->render();
+                // Render HTML body using the theme
+                $compiledHtml = view($themeView, [
+                    'body' => $log->body,
+                    'settings' => $settings
+                ])->render();
+            } else {
+                // Use plain body as is (it might still contain HTML from the editor, but no theme wrapper)
+                $compiledHtml = $log->body;
+            }
 
             $email = (new Email())
                 ->from(new Address($config->from_email, $config->from_name))
