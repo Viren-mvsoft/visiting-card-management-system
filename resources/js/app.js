@@ -3,7 +3,7 @@ import './bootstrap';
 // ===== Vanilla JS Utilities for VCMS =====
 
 // Password visibility toggle
-window.togglePasswordVisibility = function(inputId) {
+window.togglePasswordVisibility = function (inputId) {
     var input = document.getElementById(inputId);
     var eyeOpen = document.getElementById(inputId + '-eye-open');
     var eyeClosed = document.getElementById(inputId + '-eye-closed');
@@ -19,7 +19,7 @@ window.togglePasswordVisibility = function(inputId) {
 };
 
 // Dropdown toggle
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     const trigger = e.target.closest('[data-dropdown-trigger]');
     if (trigger) {
         e.stopPropagation();
@@ -55,7 +55,7 @@ document.addEventListener('click', function(e) {
 });
 
 // Mobile sidebar toggle
-window.toggleSidebar = function() {
+window.toggleSidebar = function () {
     const sidebar = document.getElementById('mobile-sidebar');
     const overlay = document.getElementById('sidebar-overlay');
     if (sidebar) {
@@ -73,19 +73,55 @@ window.toggleSidebar = function() {
 };
 
 // Flash message auto-dismiss
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const flashMessages = document.querySelectorAll('[data-flash]');
-    flashMessages.forEach(function(msg) {
-        setTimeout(function() {
+    flashMessages.forEach(function (msg) {
+        setTimeout(function () {
             msg.style.opacity = '0';
             msg.style.transform = 'translateY(-8px)';
-            setTimeout(function() { msg.remove(); }, 300);
+            setTimeout(function () { msg.remove(); }, 300);
         }, 4000);
     });
 });
 
+// Intl Tel Input initialization helper
+window.phoneInputInstances = new Map();
+window.initPhoneInput = function (element) {
+    if (!element) return;
+
+    const iti = window.intlTelInput(element, {
+        initialCountry: "auto",
+        geoIpLookup: function (callback) {
+            fetch("https://ipapi.co/json")
+                .then(res => res.json())
+                .then(data => callback(data.country_code))
+                .catch(() => callback("us"));
+        },
+        utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@24.5.0/build/js/utils.js",
+        separateDialCode: true,
+        preferredCountries: ["in", "us", "gb", "ae"],
+    });
+
+    window.phoneInputInstances.set(element, iti);
+    return iti;
+};
+
+// Sync international numbers before form submit
+window.syncPhoneNumbers = function (formElement) {
+    const phoneInputs = formElement.querySelectorAll('input[type="tel"]');
+    phoneInputs.forEach(input => {
+        const iti = window.phoneInputInstances.get(input);
+        if (iti) {
+            // Get full number and set it back to input value
+            // We use a temporary field approach if we want to be safe, 
+            // but usually overwriting the value before submit works.
+            input.value = iti.getNumber();
+        }
+    });
+};
+
 // Repeatable fields (phones/emails)
-window.addRepeatableField = function(containerId, type) {
+window.addRepeatableField = function (containerId, type) {
     const container = document.getElementById(containerId);
     const index = container.children.length;
     let labels, placeholder;
@@ -107,9 +143,11 @@ window.addRepeatableField = function(containerId, type) {
                 class="w-24 sm:w-32 shrink-0 rounded-xl border border-surface-700 bg-surface-800 px-3 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all">
                 ${labels}
             </select>
-            <input type="${inputType}" name="${fieldName}[${index}][${type === 'phone' ? 'phone' : 'email'}]"
-                placeholder="${placeholder}"
-                class="flex-1 min-w-0 rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 placeholder-surface-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all" />
+            <div class="flex-1">
+                <input type="${inputType}" name="${fieldName}[${index}][${type === 'phone' ? 'phone' : 'email'}]"
+                    placeholder="${placeholder}"
+                    class="w-full rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 placeholder-surface-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all" />
+            </div>
             <button type="button" onclick="this.parentElement.remove()"
                 class="shrink-0 p-2 rounded-lg text-danger-400 hover:bg-danger-500/10 transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -120,14 +158,21 @@ window.addRepeatableField = function(containerId, type) {
     `;
 
     container.insertAdjacentHTML('beforeend', html);
+
+    // Initialize phone input if needed
+    if (type === 'phone') {
+        const newRow = document.getElementById(`${fieldName}-row-${index}`);
+        const newInput = newRow.querySelector('input[type="tel"]');
+        window.initPhoneInput(newInput);
+    }
 };
 
 // Image preview on file input
-window.previewImage = function(input, previewId) {
+window.previewImage = function (input, previewId) {
     const preview = document.getElementById(previewId);
     if (input.files && input.files[0]) {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             preview.src = e.target.result;
             preview.classList.remove('hidden');
             const placeholder = preview.parentElement.querySelector('.upload-placeholder');
@@ -138,7 +183,7 @@ window.previewImage = function(input, previewId) {
 };
 
 // Lightbox
-window.openLightbox = function(src) {
+window.openLightbox = function (src) {
     const overlay = document.createElement('div');
     overlay.id = 'lightbox-overlay';
     overlay.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm';
@@ -154,21 +199,21 @@ window.openLightbox = function(src) {
             <img src="${src}" class="max-w-full max-h-[85vh] rounded-xl shadow-2xl object-contain" />
         </div>
     `;
-    overlay.addEventListener('click', function(e) {
+    overlay.addEventListener('click', function (e) {
         if (e.target === overlay) overlay.remove();
     });
     document.body.appendChild(overlay);
 };
 
 // Confirm delete
-window.confirmDelete = function(formId, itemName) {
+window.confirmDelete = function (formId, itemName) {
     if (confirm('Are you sure you want to delete this ' + (itemName || 'item') + '? This action cannot be undone.')) {
         document.getElementById(formId).submit();
     }
 };
 
 // Theme management
-window.initTheme = function() {
+window.initTheme = function () {
     const theme = localStorage.getItem('theme') || 'dark';
     if (theme === 'light') {
         document.documentElement.classList.add('light');
@@ -177,7 +222,7 @@ window.initTheme = function() {
     }
 };
 
-window.toggleTheme = function() {
+window.toggleTheme = function () {
     const isLight = document.documentElement.classList.toggle('light');
     localStorage.setItem('theme', isLight ? 'light' : 'dark');
 };
@@ -186,7 +231,7 @@ window.toggleTheme = function() {
 document.addEventListener('DOMContentLoaded', initTheme);
 
 // Template preview (for send email page)
-window.loadTemplatePreview = function(templateId, contactId, configId) {
+window.loadTemplatePreview = function (templateId, contactId, configId) {
     if (!templateId || !contactId) return;
 
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
@@ -204,18 +249,18 @@ window.loadTemplatePreview = function(templateId, contactId, configId) {
             config_id: configId || null,
         }),
     })
-    .then(function(response) { return response.json(); })
-    .then(function(data) {
-        const subjectEl = document.getElementById('preview-subject');
-        const bodyEl = document.getElementById('preview-body');
-        if (subjectEl) subjectEl.textContent = data.subject;
-        if (bodyEl) {
-            if (bodyEl.tagName === 'IFRAME') {
-                bodyEl.srcdoc = data.body;
-            } else {
-                bodyEl.innerHTML = data.body;
+        .then(function (response) { return response.json(); })
+        .then(function (data) {
+            const subjectEl = document.getElementById('preview-subject');
+            const bodyEl = document.getElementById('preview-body');
+            if (subjectEl) subjectEl.textContent = data.subject;
+            if (bodyEl) {
+                if (bodyEl.tagName === 'IFRAME') {
+                    bodyEl.srcdoc = data.body;
+                } else {
+                    bodyEl.innerHTML = data.body;
+                }
             }
-        }
-    })
-    .catch(function(err) { console.error('Preview error:', err); });
+        })
+        .catch(function (err) { console.error('Preview error:', err); });
 };

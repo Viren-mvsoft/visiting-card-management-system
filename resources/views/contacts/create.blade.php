@@ -34,10 +34,14 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-surface-300 mb-2">Event</label>
-                    <input type="text" name="event" value="{{ old('event') }}"
-                        class="w-full rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 placeholder-surface-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all"
-                        placeholder="TechConf 2026" />
-                    @error('event') <p class="mt-1 text-sm text-danger-400">{{ $message }}</p> @enderror
+                    <select id="event_id" name="event_id" placeholder="Select or type to create an event..."
+                        class="w-full rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all">
+                        <option value=""></option>
+                        @foreach($events as $event)
+                            <option value="{{ $event->id }}" {{ old('event_id') == $event->id ? 'selected' : '' }}>{{ $event->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('event_id') <p class="mt-1 text-sm text-danger-400">{{ $message }}</p> @enderror
                 </div>
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-surface-300 mb-2">Notes</label>
@@ -60,14 +64,16 @@
                 </button>
             </div>
             <div id="phone-fields" class="space-y-3">
-                <div class="flex items-center gap-2 sm:gap-3">
+                <div class="flex items-center gap-2 sm:gap-3" id="phones-row-0">
                     <select name="phones[0][label]" class="w-24 sm:w-32 shrink-0 rounded-xl border border-surface-700 bg-surface-800 px-3 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all">
                         <option value="mobile">Mobile</option>
                         <option value="office">Office</option>
                         <option value="other">Other</option>
                     </select>
-                    <input type="tel" name="phones[0][phone]" placeholder="Phone number"
-                        class="flex-1 min-w-0 rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 placeholder-surface-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all" />
+                    <div class="flex-1">
+                        <input type="tel" name="phones[0][phone]" placeholder="Phone number"
+                            class="w-full rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 placeholder-surface-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -127,3 +133,37 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tom Select for events
+    new TomSelect('#event_id', {
+        create: true,
+        sortField: {
+            field: "text",
+            direction: "asc"
+        },
+        placeholder: "Select or type to create an event...",
+        maxOptions: 50,
+        render: {
+            option_create: function(data, escape) {
+                return '<div class="create">Add <strong>' + escape(data.input) + '</strong>...</div>';
+            }
+        }
+    });
+
+    // Initialize default phone input
+    const initialPhone = document.querySelector('#phones-row-0 input[type="tel"]');
+    if (initialPhone) {
+        window.initPhoneInput(initialPhone);
+    }
+
+    // Capture full numbers on submit
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        window.syncPhoneNumbers(form);
+    });
+});
+</script>
+@endpush

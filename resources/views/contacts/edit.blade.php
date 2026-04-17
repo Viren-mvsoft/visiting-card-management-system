@@ -32,8 +32,14 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-surface-300 mb-2">Event</label>
-                        <input type="text" name="event" value="{{ old('event', $contact->event) }}"
-                            class="w-full rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all" />
+                        <select id="event_id" name="event_id" placeholder="Select or type to create an event..."
+                            class="w-full rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all">
+                            <option value=""></option>
+                            @foreach($events as $event)
+                                <option value="{{ $event->id }}" {{ old('event_id', $contact->event_id) == $event->id ? 'selected' : '' }}>{{ $event->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('event_id') <p class="mt-1 text-sm text-danger-400">{{ $message }}</p> @enderror
                     </div>
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-surface-300 mb-2">Notes</label>
@@ -57,15 +63,17 @@
                 </div>
                 <div id="phone-fields" class="space-y-3">
                     @forelse($contact->phones as $i => $phone)
-                        <div class="flex items-center gap-2 sm:gap-3">
+                        <div class="flex items-center gap-2 sm:gap-3" id="phones-row-{{ $i }}">
                             <select name="phones[{{ $i }}][label]"
                                 class="w-24 sm:w-32 shrink-0 rounded-xl border border-surface-700 bg-surface-800 px-3 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all">
                                 <option value="mobile" {{ $phone->label === 'mobile' ? 'selected' : '' }}>Mobile</option>
                                 <option value="office" {{ $phone->label === 'office' ? 'selected' : '' }}>Office</option>
                                 <option value="other" {{ $phone->label === 'other' ? 'selected' : '' }}>Other</option>
                             </select>
-                            <input type="tel" name="phones[{{ $i }}][phone]" value="{{ $phone->phone }}"
-                                class="flex-1 min-w-0 rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all" />
+                            <div class="flex-1">
+                                <input type="tel" name="phones[{{ $i }}][phone]" value="{{ $phone->phone }}"
+                                    class="w-full rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all" />
+                            </div>
                             <button type="button" onclick="this.parentElement.remove()"
                                 class="shrink-0 p-2 rounded-lg text-danger-400 hover:bg-danger-500/10 transition-colors">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -75,15 +83,17 @@
                             </button>
                         </div>
                     @empty
-                        <div class="flex items-center gap-2 sm:gap-3">
+                        <div class="flex items-center gap-2 sm:gap-3" id="phones-row-0">
                             <select name="phones[0][label]"
                                 class="w-24 sm:w-32 shrink-0 rounded-xl border border-surface-700 bg-surface-800 px-3 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all">
                                 <option value="mobile">Mobile</option>
                                 <option value="office">Office</option>
                                 <option value="other">Other</option>
                             </select>
-                            <input type="tel" name="phones[0][phone]" placeholder="Phone number"
-                                class="flex-1 min-w-0 rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 placeholder-surface-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all" />
+                            <div class="flex-1">
+                                <input type="tel" name="phones[0][phone]" placeholder="Phone number"
+                                    class="w-full rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 placeholder-surface-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all" />
+                            </div>
                         </div>
                     @endforelse
                 </div>
@@ -205,3 +215,37 @@
         @endforeach
     </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tom Select for events
+    new TomSelect('#event_id', {
+        create: true,
+        sortField: {
+            field: "text",
+            direction: "asc"
+        },
+        placeholder: "Select or type to create an event...",
+        maxOptions: 50,
+        render: {
+            option_create: function(data, escape) {
+                return '<div class="create">Add <strong>' + escape(data.input) + '</strong>...</div>';
+            }
+        }
+    });
+
+    // Initialize all existing phone inputs
+    const phoneInputs = document.querySelectorAll('#phone-fields input[type="tel"]');
+    phoneInputs.forEach(input => {
+        window.initPhoneInput(input);
+    });
+
+    // Capture full numbers on submit
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        window.syncPhoneNumbers(form);
+    });
+});
+</script>
+@endpush

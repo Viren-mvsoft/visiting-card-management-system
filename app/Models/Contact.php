@@ -13,13 +13,21 @@ class Contact extends Model
         'country',
         'name',
         'company_name',
-        'event',
+        'event_id',
         'notes',
     ];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the event associated with the contact.
+     */
+    public function event(): BelongsTo
+    {
+        return $this->belongsTo(Event::class);
     }
 
     public function phones(): HasMany

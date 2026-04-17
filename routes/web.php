@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmailConfigurationController;
 use App\Http\Controllers\EmailLogController;
 use App\Http\Controllers\EmailTemplateController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SendEmailController;
 use App\Http\Controllers\SettingController;
@@ -32,6 +33,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('contacts', ContactController::class);
     Route::delete('contacts/{contact}/images/{image}', [ContactController::class, 'deleteImage'])
         ->name('contacts.delete-image');
+
+    // Events
+    Route::resource('events', EventController::class);
 
     // Email Templates
     Route::resource('email-templates', EmailTemplateController::class);

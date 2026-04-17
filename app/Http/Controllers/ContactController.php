@@ -6,6 +6,7 @@ use App\Models\Contact;
 use App\Models\ContactEmail;
 use App\Models\ContactImage;
 use App\Models\ContactPhone;
+use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -21,7 +22,9 @@ class ContactController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('company_name', 'like', "%{$search}%")
-                  ->orWhere('event', 'like', "%{$search}%");
+                  ->orWhereHas('event', function($sq) use ($search) {
+                      $sq->where('name', 'like', "%{$search}%");
+                  });
             });
         }
 
@@ -32,8 +35,8 @@ class ContactController extends Controller
         if ($company = $request->input('company')) {
             $query->where('company_name', 'like', "%{$company}%");
         }
-        if ($event = $request->input('event')) {
-            $query->where('event', $event);
+        if ($eventId = $request->input('event_id')) {
+            $query->where('event_id', $eventId);
         }
         if ($dateFrom = $request->input('date_from')) {
             $query->whereDate('created_at', '>=', $dateFrom);
@@ -51,16 +54,16 @@ class ContactController extends Controller
 
         // Get filter options
         $baseQuery = $user->isAdmin() ? Contact::query() : $user->contacts();
-        $countries = $baseQuery->distinct()->whereNotNull('country')->pluck('country')->sort();
-        $events = ($user->isAdmin() ? Contact::query() : $user->contacts())
-            ->distinct()->whereNotNull('event')->pluck('event')->sort();
+        $countries = $baseQuery->clone()->distinct()->whereNotNull('country')->pluck('country')->sort();
+        $events = Event::orderBy('name')->get();
 
         return view('contacts.index', compact('contacts', 'countries', 'events'));
     }
 
     public function create()
     {
-        return view('contacts.create');
+        $events = Event::orderBy('name')->get();
+        return view('contacts.create', compact('events'));
     }
 
     public function store(Request $request)
@@ -69,7 +72,7 @@ class ContactController extends Controller
             'name' => 'required|string|max:255',
             'country' => 'nullable|string|max:255',
             'company_name' => 'nullable|string|max:255',
-            'event' => 'nullable|string|max:255',
+            'event_id' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
             'phones' => 'nullable|array',
             'phones.*.phone' => 'required_with:phones|string|max:50',
@@ -82,11 +85,17 @@ class ContactController extends Controller
             'card_other' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
 
+        $eventId = $validated['event_id'] ?? null;
+        if ($eventId && !is_numeric($eventId)) {
+            $event = Event::firstOrCreate(['name' => $eventId]);
+            $eventId = $event->id;
+        }
+
         $contact = $request->user()->contacts()->create([
             'name' => $validated['name'],
             'country' => $validated['country'] ?? null,
             'company_name' => $validated['company_name'] ?? null,
-            'event' => $validated['event'] ?? null,
+            'event_id' => $eventId,
             'notes' => $validated['notes'] ?? null,
         ]);
 
@@ -132,8 +141,9 @@ class ContactController extends Controller
     {
         $this->authorizeAccess($request, $contact);
         $contact->load(['phones', 'emails', 'images']);
+        $events = Event::orderBy('name')->get();
 
-        return view('contacts.edit', compact('contact'));
+        return view('contacts.edit', compact('contact', 'events'));
     }
 
     public function update(Request $request, Contact $contact)
@@ -144,7 +154,7 @@ class ContactController extends Controller
             'name' => 'required|string|max:255',
             'country' => 'nullable|string|max:255',
             'company_name' => 'nullable|string|max:255',
-            'event' => 'nullable|string|max:255',
+            'event_id' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
             'phones' => 'nullable|array',
             'phones.*.phone' => 'required_with:phones|string|max:50',
@@ -157,11 +167,17 @@ class ContactController extends Controller
             'card_other' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
 
+        $eventId = $validated['event_id'] ?? null;
+        if ($eventId && !is_numeric($eventId)) {
+            $event = Event::firstOrCreate(['name' => $eventId]);
+            $eventId = $event->id;
+        }
+
         $contact->update([
             'name' => $validated['name'],
             'country' => $validated['country'] ?? null,
             'company_name' => $validated['company_name'] ?? null,
-            'event' => $validated['event'] ?? null,
+            'event_id' => $eventId,
             'notes' => $validated['notes'] ?? null,
         ]);
 

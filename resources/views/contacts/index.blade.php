@@ -25,10 +25,10 @@
                         <option value="{{ $country }}" {{ request('country') == $country ? 'selected' : '' }}>{{ $country }}</option>
                     @endforeach
                 </select>
-                <select name="event" class="rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all">
+                <select name="event_id" class="rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all">
                     <option value="">All Events</option>
                     @foreach($events as $event)
-                        <option value="{{ $event }}" {{ request('event') == $event ? 'selected' : '' }}>{{ $event }}</option>
+                        <option value="{{ $event->id }}" {{ request('event_id') == $event->id ? 'selected' : '' }}>{{ $event->name }}</option>
                     @endforeach
                 </select>
                 <select name="per_page" class="rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all min-w-[100px]">
@@ -40,7 +40,7 @@
                 <button type="submit" class="px-5 py-2.5 rounded-xl bg-surface-800 text-surface-300 text-sm font-medium hover:bg-surface-700 border border-surface-700 transition-all">
                     Filter
                 </button>
-                @if(request()->hasAny(['search', 'country', 'event']))
+                @if(request()->hasAny(['search', 'country', 'event_id']))
                     <a href="{{ route('contacts.index') }}" class="px-5 py-2.5 rounded-xl text-surface-400 text-sm font-medium hover:text-surface-200 transition-all">Clear</a>
                 @endif
             </div>
@@ -85,7 +85,7 @@
                                 <td class="px-6 py-4 text-sm text-surface-400 hidden md:table-cell">{{ $contact->country ?? '—' }}</td>
                                 <td class="px-6 py-4 hidden lg:table-cell">
                                     @if($contact->event)
-                                        <span class="inline-flex px-2.5 py-1 rounded-lg text-xs font-medium bg-primary-500/10 text-primary-400 border border-primary-500/20">{{ $contact->event }}</span>
+                                        <a href="{{ route('events.show', $contact->event) }}" class="inline-flex px-2.5 py-1 rounded-lg text-xs font-medium bg-primary-500/10 text-primary-400 border border-primary-500/20 hover:bg-primary-500/20 transition-all">{{ $contact->event->name }}</a>
                                     @else
                                         <span class="text-sm text-surface-500">—</span>
                                     @endif
