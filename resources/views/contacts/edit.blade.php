@@ -27,19 +27,51 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-surface-300 mb-2">Country</label>
-                        <input type="text" name="country" value="{{ old('country', $contact->country) }}"
-                            class="w-full rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all" />
+                        <select id="country_id" name="country_id" placeholder="Select a country..."
+                            class="w-full rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all">
+                            <option value=""></option>
+                            @foreach ($countries as $country)
+                                <option value="{{ $country->id }}"
+                                    {{ old('country_id', $contact->country_id) == $country->id ? 'selected' : '' }}>
+                                    {{ $country->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('country_id')
+                            <p class="mt-1 text-sm text-danger-400">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-surface-300 mb-2">Event</label>
                         <select id="event_id" name="event_id" placeholder="Select or type to create an event..."
                             class="w-full rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all">
                             <option value=""></option>
-                            @foreach($events as $event)
-                                <option value="{{ $event->id }}" {{ old('event_id', $contact->event_id) == $event->id ? 'selected' : '' }}>{{ $event->name }}</option>
+                            @foreach ($events as $event)
+                                <option value="{{ $event->id }}"
+                                    {{ old('event_id', $contact->event_id) == $event->id ? 'selected' : '' }}>
+                                    {{ $event->name }}</option>
                             @endforeach
                         </select>
-                        @error('event_id') <p class="mt-1 text-sm text-danger-400">{{ $message }}</p> @enderror
+                        @error('event_id')
+                            <p class="mt-1 text-sm text-danger-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-surface-300 mb-2">Website</label>
+                        <input type="url" name="website" value="{{ old('website', $contact->website) }}"
+                            class="w-full rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 placeholder-surface-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all"
+                            placeholder="https://example.com" />
+                        @error('website')
+                            <p class="mt-1 text-sm text-danger-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-surface-300 mb-2">Physical Address</label>
+                        <textarea name="address" rows="2"
+                            class="w-full rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 placeholder-surface-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all resize-none"
+                            placeholder="Full office or home address...">{{ old('address', $contact->address) }}</textarea>
+                        @error('address')
+                            <p class="mt-1 text-sm text-danger-400">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-surface-300 mb-2">Notes</label>
@@ -63,19 +95,20 @@
                 </div>
                 <div id="phone-fields" class="space-y-3">
                     @forelse($contact->phones as $i => $phone)
-                        <div class="flex items-center gap-2 sm:gap-3" id="phones-row-{{ $i }}">
+                        <div class="flex flex-wrap items-center gap-2 sm:gap-3" id="phones-row-{{ $i }}">
                             <select name="phones[{{ $i }}][label]"
-                                class="w-24 sm:w-32 shrink-0 rounded-xl border border-surface-700 bg-surface-800 px-3 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all">
+                                class="w-full sm:w-32 shrink-0 rounded-xl border border-surface-700 bg-surface-800 px-3 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all order-1">
                                 <option value="mobile" {{ $phone->label === 'mobile' ? 'selected' : '' }}>Mobile</option>
                                 <option value="office" {{ $phone->label === 'office' ? 'selected' : '' }}>Office</option>
                                 <option value="other" {{ $phone->label === 'other' ? 'selected' : '' }}>Other</option>
                             </select>
-                            <div class="flex-1">
-                                <input type="tel" name="phones[{{ $i }}][phone]" value="{{ $phone->phone }}"
+                            <div class="flex-1 min-w-[200px] order-2">
+                                <input type="tel" name="phones[{{ $i }}][phone]"
+                                    value="{{ $phone->phone }}"
                                     class="w-full rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all" />
                             </div>
                             <button type="button" onclick="this.parentElement.remove()"
-                                class="shrink-0 p-2 rounded-lg text-danger-400 hover:bg-danger-500/10 transition-colors">
+                                class="shrink-0 p-2 rounded-lg text-danger-400 hover:bg-danger-500/10 transition-colors order-3">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -113,18 +146,21 @@
                 </div>
                 <div id="email-fields" class="space-y-3">
                     @forelse($contact->emails as $i => $email)
-                        <div class="flex items-center gap-2 sm:gap-3">
+                        <div class="flex flex-wrap items-center gap-2 sm:gap-3">
                             <select name="emails[{{ $i }}][label]"
-                                class="w-24 sm:w-32 shrink-0 rounded-xl border border-surface-700 bg-surface-800 px-3 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all">
+                                class="w-full sm:w-32 shrink-0 rounded-xl border border-surface-700 bg-surface-800 px-3 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all order-1">
                                 <option value="work" {{ $email->label === 'work' ? 'selected' : '' }}>Work</option>
                                 <option value="personal" {{ $email->label === 'personal' ? 'selected' : '' }}>Personal
                                 </option>
                                 <option value="other" {{ $email->label === 'other' ? 'selected' : '' }}>Other</option>
                             </select>
-                            <input type="email" name="emails[{{ $i }}][email]" value="{{ $email->email }}"
-                                class="flex-1 min-w-0 rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all" />
+                            <div class="flex-1 min-w-[200px] order-2">
+                                <input type="email" name="emails[{{ $i }}][email]"
+                                    value="{{ $email->email }}"
+                                    class="w-full rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all" />
+                            </div>
                             <button type="button" onclick="this.parentElement.remove()"
-                                class="shrink-0 p-2 rounded-lg text-danger-400 hover:bg-danger-500/10 transition-colors">
+                                class="shrink-0 p-2 rounded-lg text-danger-400 hover:bg-danger-500/10 transition-colors order-3">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -193,11 +229,21 @@
             </div>
 
             <!-- Actions -->
-            <div class="flex items-center justify-end gap-3">
+            <div class="flex flex-col sm:flex-row items-center justify-end gap-3">
                 <a href="{{ route('contacts.show', $contact) }}"
-                    class="px-5 py-2.5 rounded-xl text-sm font-medium text-surface-400 hover:text-surface-200 transition-colors">Cancel</a>
+                    class="w-full sm:w-auto text-center px-5 py-2.5 rounded-xl text-sm font-medium text-surface-400 hover:text-surface-200 transition-colors order-3 sm:order-1">Cancel</a>
+
+                <button type="button" onclick="saveToPhone()"
+                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl border border-surface-700 bg-surface-800 text-surface-200 text-sm font-semibold hover:bg-surface-700 transition-all shadow-lg shadow-black/20 order-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    Save to Phone
+                </button>
+
                 <button type="submit"
-                    class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 text-white text-sm font-semibold hover:from-primary-400 hover:to-primary-500 transition-all shadow-lg shadow-primary-500/20">
+                    class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 text-white text-sm font-semibold hover:from-primary-400 hover:to-primary-500 transition-all shadow-lg shadow-primary-500/20 order-1 sm:order-3">
                     Update Contact
                 </button>
             </div>
@@ -217,35 +263,65 @@
 @endsection
 
 @push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Tom Select for events
-    new TomSelect('#event_id', {
-        create: true,
-        sortField: {
-            field: "text",
-            direction: "asc"
-        },
-        placeholder: "Select or type to create an event...",
-        maxOptions: 50,
-        render: {
-            option_create: function(data, escape) {
-                return '<div class="create">Add <strong>' + escape(data.input) + '</strong>...</div>';
-            }
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tom Select for countries
+            new TomSelect('#country_id', {
+                create: false,
+                sortField: {
+                    field: "text",
+                    direction: "asc"
+                },
+                placeholder: "Select a country...",
+                maxOptions: 250
+            });
+
+            // Tom Select for events
+            new TomSelect('#event_id', {
+                create: true,
+                sortField: {
+                    field: "text",
+                    direction: "asc"
+                },
+                placeholder: "Select or type to create an event...",
+                maxOptions: 50,
+                render: {
+                    option_create: function(data, escape) {
+                        return '<div class="create">Add <strong>' + escape(data.input) +
+                            '</strong>...</div>';
+                    }
+                }
+            });
+
+            // Initialize all existing phone inputs
+            const phoneInputs = document.querySelectorAll('#phone-fields input[type="tel"]');
+            phoneInputs.forEach(input => {
+                window.initPhoneInput(input);
+            });
+
+            // Capture full numbers on submit
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(e) {
+                window.syncPhoneNumbers(form);
+            });
+        });
+
+        function saveToPhone() {
+            const form = document.querySelector('form');
+            const originalAction = form.action;
+            const originalTarget = form.target;
+            const originalMethod = form.method;
+
+            // Use vCard preview route
+            form.action = '{{ route('contacts.vcard-preview') }}';
+            form.method = 'POST';
+            form.target = '_blank';
+            form.submit();
+
+            // Restore original form state
+            form.action = originalAction;
+            form.method = originalMethod;
+            form.target = originalTarget;
         }
-    });
-
-    // Initialize all existing phone inputs
-    const phoneInputs = document.querySelectorAll('#phone-fields input[type="tel"]');
-    phoneInputs.forEach(input => {
-        window.initPhoneInput(input);
-    });
-
-    // Capture full numbers on submit
-    const form = document.querySelector('form');
-    form.addEventListener('submit', function(e) {
-        window.syncPhoneNumbers(form);
-    });
-});
-</script>
+    </script>
 @endpush

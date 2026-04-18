@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BulkEmailController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmailConfigurationController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SendEmailController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\UnsubscribeController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -31,8 +33,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Contacts
     Route::resource('contacts', ContactController::class);
+    Route::get('contacts-export', [ContactController::class, 'export'])->name('contacts.export');
     Route::delete('contacts/{contact}/images/{image}', [ContactController::class, 'deleteImage'])
         ->name('contacts.delete-image');
+    Route::patch('contacts/{contact}/resubscribe', [ContactController::class, 'resubscribe'])
+        ->name('contacts.resubscribe');
+    Route::post('contacts/scan', [\App\Http\Controllers\CardScannerController::class, 'scan'])
+        ->name('contacts.scan');
+    Route::get('contacts/{contact}/vcard', [\App\Http\Controllers\ContactVCardController::class, 'download'])
+        ->name('contacts.vcard');
+    Route::post('contacts/vcard-preview', [\App\Http\Controllers\ContactVCardController::class, 'preview'])
+        ->name('contacts.vcard-preview');
 
     // Events
     Route::resource('events', EventController::class);
@@ -49,6 +60,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('contacts.send-email.store');
     Route::post('email-preview', [SendEmailController::class, 'preview'])
         ->name('email-preview');
+
+    // Bulk Email
+    Route::get('bulk-email', [BulkEmailController::class, 'create'])
+        ->name('contacts.bulk-email.create');
+    Route::post('bulk-email', [BulkEmailController::class, 'store'])
+        ->name('contacts.bulk-email.store');
 
     // Email Logs
     Route::get('/email-logs', [EmailLogController::class, 'index'])->name('email-logs.index');
@@ -69,6 +86,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/settings', [SettingController::class, 'store'])->name('settings.store');
     });
 });
+
+// Public Unsubscribe (Signed Route)
+Route::get('unsubscribe/{contact}', [UnsubscribeController::class, 'unsubscribe'])
+    ->name('unsubscribe')
+    ->middleware('signed');
 
 require __DIR__.'/auth.php';
 

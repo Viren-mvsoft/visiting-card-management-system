@@ -35,10 +35,12 @@
 
                 <div class="mt-5 pt-5 border-t border-surface-700/50">
                     <label for="cc_emails" class="block text-sm font-medium text-surface-200 mb-2">CC (Optional)</label>
-                    <p class="text-xs text-surface-400 mb-2">Separate multiple email addresses with commas (,)</p>
-                    <input type="text" name="cc_emails" id="cc_emails" value="{{ old('cc_emails') }}"
-                        placeholder="example1@mail.com, example2@mail.com"
+                    <select name="cc_emails[]" id="cc_emails" multiple placeholder="Add CC email..."
                         class="w-full rounded-xl border border-surface-700 bg-surface-800 px-4 py-3 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all">
+                        @foreach($existingCCs as $cc)
+                            <option value="{{ $cc }}" {{ (is_array(old('cc_emails')) && in_array($cc, old('cc_emails'))) ? 'selected' : '' }}>{{ $cc }}</option>
+                        @endforeach
+                    </select>
                     @error('cc_emails')
                         <p class="mt-2 text-sm text-danger-400">{{ $message }}</p>
                     @enderror
@@ -145,7 +147,21 @@
         </form>
     </div>
 
+@push('scripts')
     <script>
+        // Initialize Tom Select for CC emails
+        new TomSelect('#cc_emails', {
+            persist: false,
+            createOnBlur: true,
+            create: true,
+            plugins: ['remove_button'],
+            dropdownParent: 'body',
+            onItemAdd: function() {
+                this.setTextboxValue('');
+                this.refreshOptions();
+            }
+        });
+
         // Show preview panel when data loads
         var originalLoadPreview = window.loadTemplatePreview;
         window.loadTemplatePreview = function(templateId, contactId, configId) {
@@ -155,4 +171,5 @@
             originalLoadPreview(templateId, contactId, configId);
         };
     </script>
+@endpush
 @endsection

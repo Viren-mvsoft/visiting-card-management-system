@@ -24,7 +24,15 @@ class SendEmailController extends Controller
         $configurations = EmailConfiguration::active()->get();
         $templates = EmailTemplate::active()->get();
 
-        return view('emails.send', compact('contact', 'configurations', 'templates'));
+        // Get unique previously used CC emails
+        $existingCCs = EmailLog::pluck('cc')
+            ->flatten()
+            ->filter()
+            ->unique()
+            ->sort()
+            ->values();
+
+        return view('emails.send', compact('contact', 'configurations', 'templates', 'existingCCs'));
     }
 
     public function store(Request $request, Contact $contact)
@@ -37,7 +45,8 @@ class SendEmailController extends Controller
         $validated = $request->validate([
             'recipient_emails' => 'required|array|min:1',
             'recipient_emails.*' => 'required|email',
-            'cc_emails' => 'nullable|string',
+            'cc_emails' => 'nullable|array',
+            'cc_emails.*' => 'required|email',
             'email_configuration_id' => 'required|exists:email_configurations,id',
             'email_template_id' => 'required|exists:email_templates,id',
             'attach_front' => 'nullable|boolean',
@@ -75,15 +84,7 @@ class SendEmailController extends Controller
             }
         }
 
-        $ccEmails = [];
-        if (! empty($validated['cc_emails'])) {
-            $ccList = array_map('trim', explode(',', $validated['cc_emails']));
-            foreach ($ccList as $cc) {
-                if (filter_var($cc, FILTER_VALIDATE_EMAIL)) {
-                    $ccEmails[] = $cc;
-                }
-            }
-        }
+        $ccEmails = $validated['cc_emails'] ?? [];
 
         // Create email log
         $emailLog = EmailLog::create([

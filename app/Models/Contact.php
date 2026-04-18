@@ -10,12 +10,24 @@ class Contact extends Model
 {
     protected $fillable = [
         'user_id',
-        'country',
         'name',
         'company_name',
-        'event_id',
+        'website',
+        'address',
         'notes',
+        'event_id',
+        'country_id',
+        'unsubscribed_at'
     ];
+
+    protected $casts = [
+        'unsubscribed_at' => 'datetime',
+    ];
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
 
     public function user(): BelongsTo
     {
@@ -63,5 +75,10 @@ class Contact extends Model
     public function otherImage()
     {
         return $this->images()->where('type', 'other')->first();
+    }
+
+    public function isUnsubscribed(): bool
+    {
+        return $this->unsubscribed_at !== null;
     }
 }

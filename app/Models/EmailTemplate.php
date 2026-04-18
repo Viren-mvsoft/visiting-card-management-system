@@ -34,12 +34,16 @@ class EmailTemplate extends Model
 
     protected function replaceVariables(string $text, Contact $contact, ?string $senderName = null): string
     {
+        $unsubscribeUrl = \Illuminate\Support\Facades\URL::signedRoute('unsubscribe', ['contact' => $contact->id]);
+
         $replacements = [
             '{{name}}' => $contact->name,
             '{{company}}' => $contact->company_name ?? '',
-            '{{event}}' => $contact->event ?? '',
-            '{{country}}' => $contact->country ?? '',
+            '{{event}}' => $contact->event->name ?? '',
+            '{{country}}' => $contact->country->name ?? '',
             '{{sender_name}}' => $senderName ?? '',
+            '{{unsubscribe_url}}' => $unsubscribeUrl,
+            '{{unsubscribe_link}}' => '<a href="'.$unsubscribeUrl.'" style="color: #64748b; text-decoration: underline;">Unsubscribe</a>',
         ];
 
         return str_replace(array_keys($replacements), array_values($replacements), $text);

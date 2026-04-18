@@ -84,40 +84,14 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-// Intl Tel Input initialization helper
-window.phoneInputInstances = new Map();
+// Phone input initialization (No longer using intlTelInput)
 window.initPhoneInput = function (element) {
-    if (!element) return;
-
-    const iti = window.intlTelInput(element, {
-        initialCountry: "auto",
-        geoIpLookup: function (callback) {
-            fetch("https://ipapi.co/json")
-                .then(res => res.json())
-                .then(data => callback(data.country_code))
-                .catch(() => callback("us"));
-        },
-        utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@24.5.0/build/js/utils.js",
-        separateDialCode: true,
-        preferredCountries: ["in", "us", "gb", "ae"],
-    });
-
-    window.phoneInputInstances.set(element, iti);
-    return iti;
+    return null;
 };
 
-// Sync international numbers before form submit
+// Sync international numbers (No longer needed)
 window.syncPhoneNumbers = function (formElement) {
-    const phoneInputs = formElement.querySelectorAll('input[type="tel"]');
-    phoneInputs.forEach(input => {
-        const iti = window.phoneInputInstances.get(input);
-        if (iti) {
-            // Get full number and set it back to input value
-            // We use a temporary field approach if we want to be safe, 
-            // but usually overwriting the value before submit works.
-            input.value = iti.getNumber();
-        }
-    });
+    // Standard behavior
 };
 
 // Repeatable fields (phones/emails)
@@ -138,18 +112,18 @@ window.addRepeatableField = function (containerId, type) {
     const inputType = type === 'phone' ? 'tel' : 'email';
 
     const html = `
-        <div class="flex items-center gap-2 sm:gap-3 animate-fade-in" id="${fieldName}-row-${index}">
+        <div class="flex flex-wrap items-center gap-2 sm:gap-3 animate-fade-in group" id="${fieldName}-row-${index}">
             <select name="${fieldName}[${index}][label]"
-                class="w-24 sm:w-32 shrink-0 rounded-xl border border-surface-700 bg-surface-800 px-3 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all">
+                class="w-full sm:w-32 shrink-0 rounded-xl border border-surface-700 bg-surface-800 px-3 py-2.5 text-sm text-surface-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all order-1">
                 ${labels}
             </select>
-            <div class="flex-1">
+            <div class="flex-1 min-w-[200px] order-2">
                 <input type="${inputType}" name="${fieldName}[${index}][${type === 'phone' ? 'phone' : 'email'}]"
                     placeholder="${placeholder}"
                     class="w-full rounded-xl border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm text-surface-200 placeholder-surface-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-all" />
             </div>
             <button type="button" onclick="this.parentElement.remove()"
-                class="shrink-0 p-2 rounded-lg text-danger-400 hover:bg-danger-500/10 transition-colors">
+                class="shrink-0 p-2 rounded-lg text-danger-400 hover:bg-danger-500/10 transition-colors order-3">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                 </svg>
@@ -161,9 +135,7 @@ window.addRepeatableField = function (containerId, type) {
 
     // Initialize phone input if needed
     if (type === 'phone') {
-        const newRow = document.getElementById(`${fieldName}-row-${index}`);
-        const newInput = newRow.querySelector('input[type="tel"]');
-        window.initPhoneInput(newInput);
+        // Handled as standard text input
     }
 };
 

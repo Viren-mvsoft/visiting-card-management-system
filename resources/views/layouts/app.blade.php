@@ -26,10 +26,8 @@
 
     <!-- Tom Select -->
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
-    
-    <!-- Intl Tel Input -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@24.5.0/build/css/intlTelInput.css">
-    
+
+
     <style>
         /* Tom Select Dark Mode Overrides */
         .ts-control {
@@ -55,6 +53,7 @@
             border-radius: 0.75rem !important;
             margin-top: 0.5rem !important;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
+            z-index: 9999 !important;
         }
 
         .light .ts-dropdown {
@@ -91,47 +90,6 @@
 
         .light .ts-dropdown .create {
             color: #4f46e5 !important;
-        }
-
-        /* Intl Tel Input Global Overrides */
-        .iti {
-            width: 100%;
-            display: block;
-        }
-        .iti__country-list {
-            background-color: #171717 !important; /* dark: surface-900 */
-            border-color: #262626 !important; /* dark: surface-800 */
-            color: #d4d4d4 !important; /* dark: surface-300 */
-            border-radius: 0.75rem !important;
-            margin-top: 0.5rem !important;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
-            z-index: 50 !important;
-            max-width: 300px;
-        }
-        .light .iti__country-list {
-            background-color: #ffffff !important;
-            border-color: #e5e7eb !important;
-            color: #374151 !important;
-        }
-        .iti__country:hover, .iti__country.iti__highlight {
-            background-color: #262626 !important; /* dark: surface-800 */
-        }
-        .light .iti__country:hover, .light .iti__country.iti__highlight {
-            background-color: #f3f4f6 !important;
-        }
-        .iti__flag-container {
-            padding: 2px;
-        }
-        .iti__selected-flag {
-            border-top-left-radius: 0.75rem;
-            border-bottom-left-radius: 0.75rem;
-            background-color: rgba(255, 255, 255, 0.03) !important;
-        }
-        .light .iti__selected-flag {
-            background-color: rgba(0, 0, 0, 0.02) !important;
-        }
-        .iti--allow-dropdown input {
-            padding-left: 52px !important;
         }
     </style>
 
@@ -389,7 +347,6 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@24.5.0/build/js/intlTelInput.min.js"></script>
     @stack('scripts')
 </body>
 

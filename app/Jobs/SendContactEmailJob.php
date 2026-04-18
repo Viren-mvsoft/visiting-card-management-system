@@ -34,6 +34,12 @@ class SendContactEmailJob implements ShouldQueue
             return;
         }
 
+        // Check for unsubscribe
+        if (($log->contact?->isUnsubscribed()) ?? false) {
+            $log->update(['status' => 'failed', 'error' => 'Recipient has unsubscribed.']);
+            return;
+        }
+
         try {
             // Determine TLS mode: true = implicit TLS (SSL), null = STARTTLS (TLS), false = no encryption
             $tls = match (true) {

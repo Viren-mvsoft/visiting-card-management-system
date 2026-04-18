@@ -21,11 +21,11 @@ class DashboardController extends Controller
                 ->latest()
                 ->take(5)
                 ->get();
-            $topEvents = Contact::selectRaw('event, COUNT(*) as count')
-                ->whereNotNull('event')
-                ->where('event', '!=', '')
-                ->groupBy('event')
+            $topEvents = Contact::whereNotNull('event_id')
+                ->selectRaw('event_id, COUNT(*) as count')
+                ->groupBy('event_id')
                 ->orderByDesc('count')
+                ->with('event')
                 ->take(5)
                 ->get();
             $recentEmails = EmailLog::with(['contact', 'user', 'configuration', 'template'])
@@ -43,11 +43,11 @@ class DashboardController extends Controller
                 ->take(5)
                 ->get();
             $topEvents = $user->contacts()
-                ->selectRaw('event, COUNT(*) as count')
-                ->whereNotNull('event')
-                ->where('event', '!=', '')
-                ->groupBy('event')
+                ->whereNotNull('event_id')
+                ->selectRaw('event_id, COUNT(*) as count')
+                ->groupBy('event_id')
                 ->orderByDesc('count')
+                ->with('event')
                 ->take(5)
                 ->get();
             $recentEmails = $user->emailLogs()

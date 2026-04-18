@@ -9,6 +9,10 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        $this->call([
+            CountrySeeder::class,
+        ]);
+
         User::create([
             'name' => 'Admin',
             'email' => 'admin@vcms.com',
